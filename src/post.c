@@ -73,7 +73,8 @@ post_status(const char *status, const char *scope)
 	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,status_to_post);
 	
 	curl_easy_perform(curl);
-	
+
+	free(url);
 	free(status_to_post);
 	free(visibility_to_post);
 	free(authorization_header);
