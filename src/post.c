@@ -69,7 +69,6 @@ post_status(const char *status, const char *scope)
 	sprintf(status_to_post,status_fmt,status);
 	sprintf(visibility_to_post,scope_fmt,scope);
 
-	curl_easy_setopt(curl,CURLOPT_POSTFIELDSIZE,12L);
 	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,status_to_post);
 	
 	curl_easy_perform(curl);
