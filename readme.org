@@ -1,0 +1,11 @@
+* Demiurge
+
+  Attempt of client of Pleroma (It may work with mastodon as well, but
+  haven't tried) written in C because i'm criminally insane
+
+* THANKS TO
+
+  Dendy, who wrote the [[https://git.fai.su/dendy/fedibooru][Code reference]]
+
+* TODO
+  Literally everything
