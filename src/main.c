@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <readline/readline.h>
 #include <unistd.h>
 
 #include "login.h"
@@ -13,5 +14,5 @@ main(void)
 	char access_token[50];
 	if(access(".demiurgerc", F_OK ))
 		setup();
-	post_status("Hello from demiurge 2!","public");
+	post_status(readline("Enter your post: "),"public");
 }
