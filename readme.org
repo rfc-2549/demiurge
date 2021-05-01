@@ -7,5 +7,5 @@
 
   Dendy, who wrote the [[https://git.fai.su/dendy/fedibooru][Code reference]]
 
-* TODO
+* TODO:
   Literally everything
