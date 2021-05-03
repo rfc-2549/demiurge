@@ -55,8 +55,7 @@ post_status(const char *status, const char *scope)
 	int status_len = strlen(status) +  strlen("status=") + 1;
 	int scope_len = strlen(scope) + strlen("visibility=") + 1;
 
-	char *status_fmt = "status=%s";
-	char *scope_fmt  = "visibility=%s";
+	char *params_fmt = "status=%s&visibility=%s";
 
 	char *status_to_post = (char*)malloc(status_len);
 	char *visibility_to_post = (char*)malloc(scope_len);
@@ -65,15 +64,21 @@ post_status(const char *status, const char *scope)
 		fprintf(stderr,"Error allocating memory\n");
 		return -1;
 	}
-
-	sprintf(status_to_post,status_fmt,status);
-	sprintf(visibility_to_post,scope_fmt,scope);
-
-	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,status_to_post);
+	len = strlen(params_fmt) + strlen(status) + strlen(scope);
+	char *post_params = (char*)malloc(len);
+	
+	if(post_params == NULL) {
+		fprintf(stderr,"Error allocating memory\n");
+		return -1;
+	}
+	sprintf(post_params,params_fmt,status,scope);
+	
+	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,post_params);
 	
 	curl_easy_perform(curl);
 
 	free(url);
+	free(post_params);
 	free(status_to_post);
 	free(visibility_to_post);
 	free(authorization_header);

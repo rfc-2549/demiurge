@@ -69,7 +69,7 @@ setup()
 	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,
 		"client_name=demiurge&redirect_uris=urn:ietf:wg:oauth:2.0:oob&scope=read write");
 	
-	CURLcode res = curl_easy_perform(curl);
+	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 	parsed_json = json_tokener_parse(buf);
 	if(parsed_json == NULL) {

@@ -9,10 +9,9 @@
 int
 main(void)
 {
-	char client_id[50];
-	char client_secret[50];
-	char access_token[50];
 	if(access(".demiurgerc", F_OK ))
 		setup();
-	post_status(readline("Enter your post: "),"public");
+	char *post  = readline("Enter your post: ");
+	char *scope = readline("Enter the visibility [public]: ");
+	post_status(post,scope);
 }
