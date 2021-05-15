@@ -64,6 +64,7 @@ post_status(const char *status, const char *scope)
 		fprintf(stderr,"Error allocating memory\n");
 		return -1;
 	}
+	
 	len = strlen(params_fmt) + strlen(status) + strlen(scope);
 	char *post_params = (char*)malloc(len);
 	

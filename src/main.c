@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "login.h"
 #include "util.h"
@@ -14,4 +15,6 @@ main(void)
 	char *post  = readline("Enter your post: ");
 	char *scope = readline("Enter the visibility [public]: ");
 	post_status(post,scope);
+	free(post);
+	free(scope);
 }
