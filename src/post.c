@@ -7,7 +7,6 @@
 
 /* This function post "status" with the visibility "visibility" */
 
-/* TODO: Make the visibility thing work */
 
 int
 post_status(const char *status, const char *scope)
