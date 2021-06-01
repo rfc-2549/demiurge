@@ -44,6 +44,7 @@ main(int argc, char **argv)
 			break;
 		case 'v':
 			visibility = optarg;
+			break;
 		}
 	}
 	if(status == NULL) {
