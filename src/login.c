@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 #include <readline/readline.h>
+#include "asprintf.h"
 
 #include <json-c/json.h>
 
@@ -55,12 +56,9 @@ setup()
 	int len = strlen(instance) + strlen(api_url) + 1;
 	char buf[8192];
 
-	char *post_url = (char*)malloc(len);
-	if(post_url == NULL) {
-		fprintf(stderr,"Error allocating memory\n");
-		return -1;
-	}
-	sprintf(post_url,"%s%s",instance,api_url);
+	char *post_url = NULL;
+
+	asprintf(&post_url,"%s%s",instance,api_url);
 	curl_easy_setopt(curl,CURLOPT_URL, post_url);
 	curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl,CURLOPT_WRITEDATA,buf);
@@ -85,16 +83,11 @@ setup()
 	char *fmt = "%s%sresonse_type=code&client_id=%s&redirect_uri=urn:ietf:wg:oauth:2.0:oob&force_login&scope=read write";
 	api_url = "/oauth/authorize?";
 	
-	len = strlen(instance) + strlen(api_url)+  strlen(fmt) + strlen(client_id) + 1;
 	free(post_url);
 
-	post_url = (char*)malloc(len);
-	if(post_url == NULL) {
-		fprintf(stderr,"Error allocating memory\n");
-		return -1;
-	}
+	post_url = NULL;
 
-	sprintf(post_url,fmt,instance,api_url,client_id);
+	asprintf(&post_url,fmt,instance,api_url,client_id);
 	puts(post_url);
 
 	curl = curl_easy_init();
@@ -106,22 +99,13 @@ setup()
 	api_url = "/oauth/token";
 
 	
-	char *post_token_url = (char*)malloc(strlen(access_token_fmt) + strlen(client_id)
-		+ strlen(client_secret ) + strlen(code) + 3);
-	if(post_token_url == NULL) {
-		fprintf(stderr,"Error allocating memory");
-		return -1;
-	}
-	sprintf(post_token_url, access_token_fmt,client_id,client_secret,code);
+	char *post_token_url = NULL;
 
-	len = strlen(instance) + strlen(api_url) + 1;
+	asprintf(&post_token_url, access_token_fmt,client_id,client_secret,code);
 
-	post_url = (char*)malloc(len);
-	if(post_url == NULL) {
-		fprintf(stderr,"Error allocating memory");
-		return -1;
-	}
-	sprintf(post_url,"%s%s",instance,api_url);
+	post_url = NULL;
+	
+	asprintf(&post_url,"%s%s",instance,api_url);
 
 	curl_easy_setopt(curl, CURLOPT_URL,post_url);
 	curl_easy_setopt(curl,CURLOPT_POSTFIELDS, post_token_url);
@@ -132,6 +116,9 @@ setup()
 	parsed_json = json_tokener_parse(buf);
 	json_object_object_get_ex(parsed_json, "access_token", &json_access_token);
 	const char *access_token = json_object_get_string(json_access_token);
-	store_config(instance,client_id,client_secret,access_token);	
+	store_config(instance,client_id,client_secret,access_token);
+	
+	free(code);
+	free(post_url);
 	return 0;
 }
