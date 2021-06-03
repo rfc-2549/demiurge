@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "util.h"
+#include "asprintf.h"
 
 /* This function post "status" with the visibility "visibility" */
 
@@ -24,54 +25,30 @@ post_status(const char *status, const char *scope)
 	}
 	
 	char *api_url = "/api/v1/statuses";
-	char *url = (char*)malloc(strlen(instance) + strlen(api_url) + 1);
+	char *url = NULL;
 	
-	if(url == NULL) {
-		fprintf(stderr,"Error allocating memory!\n");
-		return -1;
-	}
-	
-	sprintf(url,"%s%s",instance,api_url);
+	asprintf(&url,"%s%s",instance,api_url);
 	puts(url);
 	
 	curl_easy_setopt(curl,CURLOPT_URL,url);
 
 	char *header_fmt = "Authorization: Bearer %s";
-	int len = strlen(header_fmt) + strlen(access_token) + 1;
-	char *authorization_header = (char*)malloc(len);
-	if(authorization_header == NULL) {
-		fprintf(stderr,"Error allocating memory!");
-		return -1;
-	}
-
+	char *authorization_header = NULL;
 	struct curl_slist *header_list = NULL;
 	
-	sprintf(authorization_header,header_fmt,access_token);
+	asprintf(&authorization_header,header_fmt,access_token);
 	header_list = curl_slist_append(header_list, authorization_header);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
-	
-	int status_len = strlen(status) +  strlen("status=") + 1;
-	int scope_len = strlen(scope) + strlen("visibility=") + 1;
 
 	char *params_fmt = "status=%s&visibility=%s";
 
-	char *status_to_post = (char*)malloc(status_len);
-	char *visibility_to_post = (char*)malloc(scope_len);
-		
-	if(status_to_post == NULL) {
-		fprintf(stderr,"Error allocating memory\n");
-		return -1;
-	}
+	char *status_to_post = NULL;
+	char *visibility_to_post = NULL;
 	
-	len = strlen(params_fmt) + strlen(status) + strlen(scope);
-	char *post_params = (char*)malloc(len);
-	
-	if(post_params == NULL) {
-		fprintf(stderr,"Error allocating memory\n");
-		return -1;
-	}
-	sprintf(post_params,params_fmt,status,scope);
+	char *post_params = NULL;
+
+	asprintf(&post_params,params_fmt,status,scope);
 	
 	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,post_params);
 	
