@@ -54,6 +54,9 @@ setup()
 	curl_easy_setopt(curl,CURLOPT_WRITEDATA,buf);
 	
 	/* TODO: Better way lol */
+	/* If someone wants to do it, use curl_mime thing, I am to lazy
+	 * to do this */
+	
 	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,
 		"client_name=demiurge&redirect_uris=urn:ietf:wg:oauth:2.0:oob&scope=read write");
 	
