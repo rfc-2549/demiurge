@@ -4,18 +4,9 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 #include <readline/readline.h>
-#include "asprintf.h"
-
 #include <json-c/json.h>
-
-size_t
-write_data(void *buffer, size_t size, size_t nmemb, void *userp)
-{
-
-	memcpy(userp,buffer,nmemb*size);
-	return 0;
-}
-
+#include "asprintf.h"
+#include "util.h"
 
 void
 store_config(const char *instance, const char *client_id,
@@ -53,7 +44,6 @@ setup()
 		return -1;
 	}
 	
-	int len = strlen(instance) + strlen(api_url) + 1;
 	char buf[8192];
 
 	char *post_url = NULL;

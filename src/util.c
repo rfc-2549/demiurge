@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 /* This function fucking sucks and should use something else. I'll
  * have to rewrite this shit function some day. But for now, it will
@@ -21,5 +22,13 @@ get_tokens_from_file(char *filename, char *instance, char *client_id,
 	fscanf(fp,"client_secret=%s\n",client_secret);
 	fscanf(fp,"access_token=%s\n",access_token);
 	
+	return 0;
+}
+
+size_t
+write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+{
+
+	memcpy(userp,buffer,nmemb*size);
 	return 0;
 }

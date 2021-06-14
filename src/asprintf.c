@@ -32,6 +32,5 @@ vasprintf(char **restrict strp, const char *restrict fmt,
 		return -1;
 	
 	va_end(args);
-	
 	return size = vsprintf(*strp,fmt,ap);
 }

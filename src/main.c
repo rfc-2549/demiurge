@@ -7,13 +7,14 @@
 #include "login.h"
 #include "util.h"
 #include "post.h"
+#include "upload_file.h"
 
 /* prints usage */
 
 void
 usage(const char *progname)
 {
-	printf("Usage: %s -s=status [-v=visibility]\n",progname);
+	printf("Usage: %s -s=status [-v=visibility] [-F=filename]\n",progname);
 	return;
 }
 /* prints a string to stderr */
@@ -31,13 +32,13 @@ main(int argc, char **argv)
 	int c;
 	char *status = NULL;
 	char *visibility = NULL;
-	
+	char *id_ptr = NULL;
 	if(argc == 1) {
 		usage(argv[0]);
 		return -1;
 	}
 	
-	while((c = getopt(argc,argv,"s:v:")) != -1) {
+	while((c = getopt(argc,argv,"s:v:F:")) != -1) {
 		switch(c) {
 		case 's':
 			status = optarg;
@@ -45,8 +46,13 @@ main(int argc, char **argv)
 		case 'v':
 			visibility = optarg;
 			break;
+		case 'F':
+			upload_file(optarg,optarg,&id_ptr);
+			break;
 		}
+	
 	}
+	
 	if(status == NULL) {
 		eputs("Enter a status (-s)");
 		return -1;
@@ -56,6 +62,5 @@ main(int argc, char **argv)
 		visibility = "public";
 	}
 	
-	post_status(status,visibility);
-
+	post_status(status,visibility,id_ptr);
 }

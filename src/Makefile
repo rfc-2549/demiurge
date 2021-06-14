@@ -1,7 +1,7 @@
 # demiurge makefile
 
 TARGET = demiurge
-OBJS   = login.o util.o post.o main.o
+OBJS   = login.o util.o post.o main.o upload_file.o
 CC     = cc
 CFLAGS = -O2 -march=native -MD -std=c11 -Wall -Wextra -lcurl -lreadline -ljson-c
 

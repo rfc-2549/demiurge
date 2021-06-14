@@ -10,7 +10,7 @@
 
 
 int
-post_status(const char *status, const char *scope)
+post_status(const char *status, const char *scope, const char *media_id)
 {
 	char instance[50];
 	char client_id[50];
@@ -28,10 +28,6 @@ post_status(const char *status, const char *scope)
 	char *url = NULL;
 	
 	asprintf(&url,"%s%s",instance,api_url);
-	puts(url);
-	
-	curl_easy_setopt(curl,CURLOPT_URL,url);
-
 	char *header_fmt = "Authorization: Bearer %s";
 	char *authorization_header = NULL;
 	struct curl_slist *header_list = NULL;
@@ -41,23 +37,39 @@ post_status(const char *status, const char *scope)
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
 
-	char *params_fmt = "status=%s&visibility=%s";
+	curl_mime *mime;
+	mime = curl_mime_init(curl);
+	curl_mimepart *status_part, *scope_part, *media_part;
+	/* Is there a better way to do this? */
+	
+	status_part = curl_mime_addpart(mime);
+	scope_part = curl_mime_addpart(mime);
+	media_part = curl_mime_addpart(mime);
+	
+	/* Status */
+	
+	curl_mime_data(status_part,status,CURL_ZERO_TERMINATED);
+	curl_mime_name(status_part,"status");
+	
+	/* Visibility */
 
-	char *status_to_post = NULL;
-	char *visibility_to_post = NULL;
-	
-	char *post_params = NULL;
+	curl_mime_data(scope_part,scope,CURL_ZERO_TERMINATED);
+	curl_mime_name(scope_part,"visibility");
 
-	asprintf(&post_params,params_fmt,status,scope);
+	/* Media */
 	
-	curl_easy_setopt(curl,CURLOPT_POSTFIELDS,post_params);
+	if(media_id != NULL) {
+		curl_mime_data(media_part,media_id,CURL_ZERO_TERMINATED);
+		curl_mime_name(media_part,"media_ids[]");
+	}
 	
+	/* post */
+	puts(url);
+	curl_easy_setopt(curl,CURLOPT_URL,url);
+	curl_easy_setopt(curl,CURLOPT_MIMEPOST,mime);
 	curl_easy_perform(curl);
 
 	free(url);
-	free(post_params);
-	free(status_to_post);
-	free(visibility_to_post);
 	free(authorization_header);
 	
 	return 0;
