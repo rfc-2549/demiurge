@@ -17,12 +17,9 @@ usage(const char *progname)
 	printf("Usage: %s -s=status [-v=visibility] [-F=filename]\n",progname);
 	return;
 }
+
 /* prints a string to stderr */
 
-void
-eputs(const char *s) {
-	fprintf(stderr,"%s\n",s);
-}
 
 int
 main(int argc, char **argv)

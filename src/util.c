@@ -32,3 +32,11 @@ write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 	memcpy(userp,buffer,nmemb*size);
 	return 0;
 }
+
+/* like puts() but writes to stderr */
+
+void
+eputs(const char *s)
+{
+	fprintf(stderr,"%s\n",s);
+}
