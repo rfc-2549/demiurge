@@ -12,20 +12,11 @@
 	# this is a status" with the unlisted schope
 
 	./demiurge -F "filename.jpg" -s "ebin maymay :DDD" # Post "ebin
-	# maymay" with
-	# "filename.jpg"
-	# attatched, the
-	# file description
-	# will be the same
-	# as the filename.
+	# maymay" with "filename.jpg" attatched, the file description will be
+	# the same as the filename.
 
 	for file in *.jpg; do ./demiurge -F $file -s "sbammin :DD"; done # Posts
-	# all
-	# jpgs
-	# files
-	# in
-	# different
-	# statuses
+	# all jpgs files in different statuses
 	cat /etc/passwd | ./demiurge # Posts the output of /etc/passwd
    #+end_src
   
