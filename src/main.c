@@ -30,6 +30,16 @@ main(int argc, char **argv)
 	char *status = NULL;
 	char *visibility = NULL;
 	char *id_ptr = NULL;
+	
+	/* TODO: Support filename and visibility */
+	
+	if(!isatty(0)) {
+		eputs("Not a terminal, reading from stdin");
+		char *status = readline("");
+		post_status(status,NULL,NULL);
+		return 0;
+	}
+	
 	if(argc == 1) {
 		usage(argv[0]);
 		return -1;

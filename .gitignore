@@ -1,3 +1,5 @@
 .demiurgerc
 src/.demiurgerc
 *.o
+*.d
+demiurge
