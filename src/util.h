@@ -8,3 +8,10 @@ write_data(void *buffer, size_t size, size_t nmemb, void *userp);
 
 void
 eputs(const char *s);
+
+struct memory {
+	char *response;
+	size_t size;
+};
+
+static size_t cb(void *data, size_t size, size_t nmemb, void *userp);

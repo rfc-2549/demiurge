@@ -2,6 +2,7 @@
 #include <curl/curl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <json-c/json.h>
 
 #include "util.h"
 #include "asprintf.h"
@@ -37,6 +38,13 @@ post_status(const char *status, const char *scope, const char *media_id)
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
 
+	/* Write the thing */
+	
+	struct memory chunk = {0};
+
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+	
 	curl_mime *mime;
 	mime = curl_mime_init(curl);
 	curl_mimepart *status_part, *scope_part, *media_part;
@@ -64,14 +72,23 @@ post_status(const char *status, const char *scope, const char *media_id)
 	}
 	
 	/* post */
-	puts(url);
+	
 	curl_easy_setopt(curl,CURLOPT_URL,url);
 	curl_easy_setopt(curl,CURLOPT_MIMEPOST,mime);
 	curl_easy_perform(curl);
 
+	/* The the url */
+
+	struct json_object *parsed_json;
+	struct json_object *json_url;
+	
+	parsed_json = json_tokener_parse(chunk.response);
+	json_object_object_get_ex(parsed_json, "url", &json_url);
+	puts(json_object_get_string(json_url));
+	
 	free(url);
 	free(authorization_header);
-	
+	free(chunk.response);
 	return 0;
 
 }

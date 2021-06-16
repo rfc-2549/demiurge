@@ -1,5 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
+struct memory {
+	char *response;
+	size_t size;
+};
+
 
 /* This function fucking sucks and should use something else. I'll
  * have to rewrite this shit function some day. But for now, it will
@@ -24,6 +31,24 @@ get_tokens_from_file(char *filename, char *instance, char *client_id,
 	
 	return 0;
 }
+ 
+size_t cb(void *data, size_t size, size_t nmemb, void *userp)
+{
+	size_t realsize = size * nmemb;
+	struct memory *mem = (struct memory *)userp;
+ 
+	char *ptr = realloc(mem->response, mem->size + realsize + 1);
+	if(ptr == NULL)
+		return 0;  /* out of memory! */
+ 
+	mem->response = ptr;
+	memcpy(&(mem->response[mem->size]), data, realsize);
+	mem->size += realsize;
+	mem->response[mem->size] = 0;
+ 
+	return realsize;
+}
+ 
 
 size_t
 write_data(void *buffer, size_t size, size_t nmemb, void *userp)
