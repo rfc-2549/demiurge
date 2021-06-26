@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <libgen.h>
 
 #include "login.h"
 #include "util.h"
@@ -54,7 +55,7 @@ main(int argc, char **argv)
 			visibility = optarg;
 			break;
 		case 'F':
-			upload_file(optarg,optarg,&id_ptr);
+			upload_file(optarg,basename(optarg),&id_ptr);
 			break;
 		}
 	
