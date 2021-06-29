@@ -34,11 +34,8 @@ post_status(const char *status, const char *scope, const char *media_id)
 	char client_secret[50];
 	char access_token[50];
 
-	get_tokens_from_file(".demiurgerc",
-					 instance,
-					 client_id,
-					 client_secret,
-					 access_token);
+	get_tokens_from_file(
+		".demiurgerc", instance, client_id, client_secret, access_token);
 	CURL *curl = curl_easy_init();
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating libcurl thing\n");

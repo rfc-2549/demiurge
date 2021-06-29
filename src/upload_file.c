@@ -34,11 +34,8 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	struct json_object *json_media_id;
 	char buf[8192];
 
-	get_tokens_from_file(".demiurgerc",
-					 instance,
-					 client_id,
-					 client_secret,
-					 access_token);
+	get_tokens_from_file(
+		".demiurgerc", instance, client_id, client_secret, access_token);
 	CURL *curl = curl_easy_init();
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating libcurl thing\n");

@@ -91,9 +91,8 @@ setup()
 	}
 
 	json_object_object_get_ex(parsed_json, "client_id", &json_client_id);
-	json_object_object_get_ex(parsed_json,
-						 "client_secret",
-						 &json_client_secret);
+	json_object_object_get_ex(
+		parsed_json, "client_secret", &json_client_secret);
 	const char *client_id = json_object_get_string(json_client_id);
 	const char *client_secret = json_object_get_string(json_client_secret);
 
@@ -120,11 +119,8 @@ setup()
 
 	char *post_token_url = NULL;
 
-	asprintf(&post_token_url,
-		    access_token_fmt,
-		    client_id,
-		    client_secret,
-		    code);
+	asprintf(
+		&post_token_url, access_token_fmt, client_id, client_secret, code);
 
 	post_url = NULL;
 
