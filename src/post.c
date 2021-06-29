@@ -93,6 +93,9 @@ post_status(const char *status, const char *scope, const char *media_id)
 	curl_easy_setopt(curl, CURLOPT_URL, url);
 	curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
 	curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+	curl_slist_free_all(header_list);
+	curl_mime_free(mime);
 
 	/* The the url */
 
@@ -106,5 +109,8 @@ post_status(const char *status, const char *scope, const char *media_id)
 	free(url);
 	free(authorization_header);
 	free(chunk.response);
+	free(parsed_json);
+	free(json_url);
+
 	return 0;
 }

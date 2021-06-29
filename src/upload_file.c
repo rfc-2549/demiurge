@@ -84,10 +84,13 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	free(url_to_post);
 	curl_easy_cleanup(curl);
 	curl_mime_free(mime);
+	curl_slist_free_all(header_list);
 	/* Get the media id */
 	parsed_json = json_tokener_parse(buf);
 	json_object_object_get_ex(parsed_json, "id", &json_media_id);
 	const char *media_id = json_object_get_string(json_media_id);
 	*id_ptr = media_id;
+	free(parsed_json);
+
 	return 0;
 }
