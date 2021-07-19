@@ -7,7 +7,7 @@ CFLAGS = -O2 -march=native -MD -std=c11 -Wall -Wextra -lcurl -lreadline -ljson-c
 
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(CFLAGSDEF) $(OBJS) -o $(TARGET)
+	$(CC) $(OBJS) $(CFLAGS) $(CFLAGSDEF) -o $(TARGET)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(CFLAGSDEF) $< -o $@
