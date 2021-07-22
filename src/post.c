@@ -104,9 +104,16 @@ post_status(const char *status, const char *scope, const char *media_id)
 
 	struct json_object *parsed_json;
 	struct json_object *json_url;
+	struct json_object *server_response;
 
 	parsed_json = json_tokener_parse(chunk.response);
 	json_object_object_get_ex(parsed_json, "url", &json_url);
+	json_object_object_get_ex(parsed_json, "error", &server_response);
+	char *error = (char *)json_object_get_string(server_response);
+	if(json_url == NULL) {
+		fprintf(stderr, "Error posting, server said: \"%s\"\n", error);
+		return -1;
+	}
 	puts(json_object_get_string(json_url));
 
 	free(url);
