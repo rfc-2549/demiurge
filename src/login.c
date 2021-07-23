@@ -68,7 +68,7 @@ setup()
 
 	char *post_url = NULL;
 
-	asprintf(&post_url, "%s%s", instance, api_url);
+	dm_asprintf(&post_url, "%s%s", instance, api_url);
 	curl_easy_setopt(curl, CURLOPT_URL, post_url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
@@ -80,7 +80,7 @@ setup()
 	curl_easy_setopt(curl,
 				  CURLOPT_POSTFIELDS,
 				  "client_name=demiurge&redirect_uris=urn:ietf:wg:oauth:2."
-				  "0:oob&scope=read write");
+				  "0:oob&scope=read write follow");
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
@@ -97,14 +97,14 @@ setup()
 	const char *client_secret = json_object_get_string(json_client_secret);
 
 	char *fmt = "%s%sresonse_type=code&client_id=%s&redirect_uri=urn:ietf:wg:"
-			  "oauth:2.0:oob&force_login&scope=read write";
+			  "oauth:2.0:oob&force_login&scope=read write follow";
 	api_url = "/oauth/authorize?";
 
 	free(post_url);
 
 	post_url = NULL;
 
-	asprintf(&post_url, fmt, instance, api_url, client_id);
+	dm_asprintf(&post_url, fmt, instance, api_url, client_id);
 	puts(post_url);
 
 	curl = curl_easy_init();
@@ -114,17 +114,17 @@ setup()
 
 	char *access_token_fmt =
 		"client_id=%s&client_secret=%s&redirect_uri=urn:ietf:wg:oauth:2.0:"
-		"oob&grant_type=authorization_code&code=%s&scope=read write";
+		"oob&grant_type=authorization_code&code=%s&scope=read write follow";
 	api_url = "/oauth/token";
 
 	char *post_token_url = NULL;
 
-	asprintf(
+	dm_asprintf(
 		&post_token_url, access_token_fmt, client_id, client_secret, code);
 
 	post_url = NULL;
 
-	asprintf(&post_url, "%s%s", instance, api_url);
+	dm_asprintf(&post_url, "%s%s", instance, api_url);
 
 	curl_easy_setopt(curl, CURLOPT_URL, post_url);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_token_url);

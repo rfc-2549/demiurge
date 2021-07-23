@@ -45,7 +45,7 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
 
 	char *url_to_post = NULL;
-	asprintf(&url_to_post, "%s/api/v1/media", instance);
+	dm_asprintf(&url_to_post, "%s/api/v1/media", instance);
 
 	/* Don't repeat yourself, so they say, it's the root of all evil
 	 * today */
@@ -53,7 +53,7 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	char *header_fmt = "Authorization: Bearer %s";
 	struct curl_slist *header_list = NULL;
 	char *authorization_header = NULL;
-	asprintf(&authorization_header, header_fmt, access_token);
+	dm_asprintf(&authorization_header, header_fmt, access_token);
 	header_list = curl_slist_append(header_list, authorization_header);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);

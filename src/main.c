@@ -21,11 +21,13 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <libgen.h>
+#include <stdbool.h>
 
 #include "login.h"
 #include "util.h"
 #include "post.h"
 #include "upload_file.h"
+#include "follow.h"
 
 /* prints usage */
 
@@ -47,7 +49,8 @@ main(int argc, char **argv)
 	char *status = NULL;
 	char *visibility = NULL;
 	char *id_ptr = NULL;
-
+	char *account_id = NULL;
+	int follow_flag = false;
 	/* TODO: Support filename and visibility */
 
 	if(!isatty(0)) {
@@ -62,17 +65,22 @@ main(int argc, char **argv)
 		return -1;
 	}
 
-	while((c = getopt(argc, argv, "s:v:F:")) != -1) {
+	while((c = getopt(argc, argv, "s:v:F:f:")) != -1) {
 		switch(c) {
-			case 's':
-				status = optarg;
-				break;
-			case 'v':
-				visibility = optarg;
-				break;
-			case 'F':
-				upload_file(optarg, basename(optarg), &id_ptr);
-				break;
+		case 's':
+			status = optarg;
+			break;
+		case 'v':
+			visibility = optarg;
+			break;
+		case 'F':
+			upload_file(optarg, basename(optarg), &id_ptr);
+			break;
+		case 'f':
+			account_id = get_account_id(optarg);
+			follow_account(account_id);
+			free(account_id);
+			return 0;
 		}
 	}
 
