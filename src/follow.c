@@ -129,7 +129,6 @@ follow_account(char *id, char action)
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
-	curl_easy_cleanup(curl);
 	free(api_url);
 	free(authorization_header);
 	curl_slist_free_all(header_list);
