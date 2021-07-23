@@ -129,6 +129,10 @@ follow_account(char *id, char action)
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
+	curl_easy_cleanup(curl);
+	free(api_url);
+	free(authorization_header);
+	curl_slist_free_all(header_list);
 
 	struct json_object *parsed_json;
 	struct json_object *following;
@@ -140,5 +144,6 @@ follow_account(char *id, char action)
 	json_object_put(parsed_json);
 	curl_slist_free_all(header_list);
 	free(chunk.response);
+
 	return 0;
 }
