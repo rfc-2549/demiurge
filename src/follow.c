@@ -88,7 +88,7 @@ get_account_id(char *name)
 }
 
 int
-follow_account(char *id)
+follow_account(char *id, char action)
 {
 	char instance[50];
 	char client_id[50];
@@ -102,6 +102,11 @@ follow_account(char *id)
 		return -1;
 	}
 	char *api_url_fmt = "%s/api/v1/accounts/%s/follow";
+	if(action == 'f')
+		api_url_fmt = "%s/api/v1/accounts/%s/follow";
+	else if(action == 'u')
+		api_url_fmt = "%s/api/v1/accounts/%s/unfollow";
+
 	char *api_url;
 	dm_asprintf(&api_url, api_url_fmt, instance, id);
 
@@ -116,49 +121,24 @@ follow_account(char *id)
 	curl_easy_setopt(curl, CURLOPT_POST, 1L);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
 	curl_easy_setopt(curl, CURLOPT_URL, api_url);
+
+	struct memory chunk = { 0 };
+
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 
+	struct json_object *parsed_json;
+	struct json_object *following;
+
+	parsed_json = json_tokener_parse(chunk.response);
+	json_object_object_get_ex(parsed_json, "following", &following);
+	printf("Following: %s\n", json_object_get_string(following));
+
+	json_object_put(parsed_json);
 	curl_slist_free_all(header_list);
-	return 0;
-}
-
-/* TODO: merge */
-
-int
-unfollow_account(char *id)
-{
-	char instance[50];
-	char client_id[50];
-	char client_secret[50];
-	char access_token[50];
-	get_tokens_from_file(
-		".demiurgerc", instance, client_id, client_secret, access_token);
-	CURL *curl = curl_easy_init();
-	if(curl == NULL) {
-		fprintf(stderr, "Error creating libcurl thing\n");
-		return -1;
-	}
-	char *api_url_fmt = "%s/api/v1/accounts/%s/unfollow";
-	char *api_url;
-	dm_asprintf(&api_url, api_url_fmt, instance, id);
-
-	char *header_fmt = "Authorization: Bearer %s";
-	char *authorization_header = NULL;
-	struct curl_slist *header_list = NULL;
-
-	dm_asprintf(&authorization_header, header_fmt, access_token);
-	header_list = curl_slist_append(header_list, authorization_header);
-
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
-	curl_easy_setopt(curl, CURLOPT_POST, 1L);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
-	curl_easy_setopt(curl, CURLOPT_URL, api_url);
-	curl_easy_perform(curl);
-	/* free */
-	free(api_url);
-	free(authorization_header);
-	curl_easy_cleanup(curl);
-	curl_slist_free_all(header_list);
+	free(chunk.response);
 	return 0;
 }

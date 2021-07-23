@@ -50,7 +50,6 @@ main(int argc, char **argv)
 	char *visibility = NULL;
 	char *id_ptr = NULL;
 	char *account_id = NULL;
-	int follow_flag = false;
 	/* TODO: Support filename and visibility */
 
 	if(!isatty(0)) {
@@ -65,7 +64,7 @@ main(int argc, char **argv)
 		return -1;
 	}
 
-	while((c = getopt(argc, argv, "s:v:F:f:")) != -1) {
+	while((c = getopt(argc, argv, "s:v:F:f:u:")) != -1) {
 		switch(c) {
 		case 's':
 			status = optarg;
@@ -78,7 +77,12 @@ main(int argc, char **argv)
 			break;
 		case 'f':
 			account_id = get_account_id(optarg);
-			follow_account(account_id);
+			follow_account(account_id,'f');
+			free(account_id);
+			return 0;
+		case 'u':
+			account_id = get_account_id(optarg);
+			follow_account(account_id,'u');
 			free(account_id);
 			return 0;
 		}
