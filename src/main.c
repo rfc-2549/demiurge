@@ -52,7 +52,7 @@ main(int argc, char **argv)
 
 	if(!isatty(0)) {
 		eputs("Not a terminal, reading from stdin");
-		char *status = readline("");
+		char *status = readline(""); // TODO: Fix newlines
 		post_status(status, NULL, NULL);
 		return 0;
 	}
