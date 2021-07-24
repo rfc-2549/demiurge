@@ -45,12 +45,12 @@ post_status(const char *status, const char *scope, const char *media_id)
 	char *api_url = "/api/v1/statuses";
 	char *url = NULL;
 
-	asprintf(&url, "%s%s", instance, api_url);
+	dm_asprintf(&url, "%s%s", instance, api_url);
 	char *header_fmt = "Authorization: Bearer %s";
 	char *authorization_header = NULL;
 	struct curl_slist *header_list = NULL;
 
-	asprintf(&authorization_header, header_fmt, access_token);
+	dm_asprintf(&authorization_header, header_fmt, access_token);
 	header_list = curl_slist_append(header_list, authorization_header);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);

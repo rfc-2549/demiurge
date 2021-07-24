@@ -18,7 +18,7 @@
 #include <stdarg.h>
 
 int
-asprintf(char **restrict strp, const char *restrict fmt, ...);
+dm_asprintf(char **restrict strp, const char *restrict fmt, ...);
 
 int
-vasprintf(char **restrict strp, const char *restrict fmt, va_list ap);
+dm_vasprintf(char **restrict strp, const char *restrict fmt, va_list ap);
