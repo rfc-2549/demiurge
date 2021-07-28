@@ -80,7 +80,7 @@ setup()
 	curl_easy_setopt(curl,
 				  CURLOPT_POSTFIELDS,
 				  "client_name=demiurge&redirect_uris=urn:ietf:wg:oauth:2."
-				  "0:oob&scope=read write follow");
+				  "0:oob&scope=read+write+follow");
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
@@ -97,7 +97,7 @@ setup()
 	const char *client_secret = json_object_get_string(json_client_secret);
 
 	char *fmt = "%s%sresonse_type=code&client_id=%s&redirect_uri=urn:ietf:wg:"
-			  "oauth:2.0:oob&force_login&scope=read write follow";
+			  "oauth:2.0:oob&force_login&scope=read+write+follow";
 	api_url = "/oauth/authorize?";
 
 	free(post_url);
@@ -114,7 +114,7 @@ setup()
 
 	char *access_token_fmt =
 		"client_id=%s&client_secret=%s&redirect_uri=urn:ietf:wg:oauth:2.0:"
-		"oob&grant_type=authorization_code&code=%s&scope=read write follow";
+		"oob&grant_type=authorization_code&code=%s&scope=read+write+follow";
 	api_url = "/oauth/token";
 
 	char *post_token_url = NULL;
