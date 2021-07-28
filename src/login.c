@@ -139,5 +139,6 @@ setup()
 
 	free(code);
 	free(post_url);
+	free(post_token_url);
 	return 0;
 }
