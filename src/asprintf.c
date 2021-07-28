@@ -28,8 +28,9 @@ dm_asprintf(char **restrict strp, const char *restrict fmt, ...)
 	va_list args;
 	int size = 0;
 	va_start(args, fmt);
+	size = dm_vasprintf(strp, fmt, args);
 	va_end(args);
-	return size = dm_vasprintf(strp, fmt, args);
+	return size;
 }
 
 int
