@@ -32,7 +32,6 @@ upload_file(const char *path, const char *description, char **id_ptr)
 
 	struct json_object *parsed_json;
 	struct json_object *json_media_id;
-	char buf[8192];
 
 	get_tokens_from_file(
 		".demiurgerc", instance, client_id, client_secret, access_token);
@@ -41,8 +40,11 @@ upload_file(const char *path, const char *description, char **id_ptr)
 		fprintf(stderr, "Error creating libcurl thing\n");
 		return -1;
 	}
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
+
+	struct memory chunk = {0};
+	
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
 	char *url_to_post = NULL;
 	dm_asprintf(&url_to_post, "%s/api/v1/media", instance);
@@ -86,11 +88,12 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	curl_mime_free(mime);
 	curl_slist_free_all(header_list);
 	/* Get the media id */
-	parsed_json = json_tokener_parse(buf);
+	parsed_json = json_tokener_parse(chunk.response);
 	json_object_object_get_ex(parsed_json, "id", &json_media_id);
 	const char *media_id = json_object_get_string(json_media_id);
 	*id_ptr = (char *)media_id;
 	free(parsed_json);
+	free(chunk.response);
 
 	return 0;
 }

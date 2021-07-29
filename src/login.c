@@ -64,14 +64,14 @@ setup()
 		return -1;
 	}
 
-	char buf[8192];
 
 	char *post_url = NULL;
-
+	struct memory chunk = {0};
+	
 	dm_asprintf(&post_url, "%s%s", instance, api_url);
 	curl_easy_setopt(curl, CURLOPT_URL, post_url);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
 	/* TODO: Better way lol */
 	/* If someone wants to do it, use curl_mime thing, I am to lazy
@@ -84,7 +84,7 @@ setup()
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
-	parsed_json = json_tokener_parse(buf);
+	parsed_json = json_tokener_parse(chunk.response);
 	if(parsed_json == NULL) {
 		fprintf(stderr, "error\n");
 		return -1;
@@ -128,11 +128,12 @@ setup()
 
 	curl_easy_setopt(curl, CURLOPT_URL, post_url);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_token_url);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+
 	curl_easy_perform(curl);
 
-	parsed_json = json_tokener_parse(buf);
+	parsed_json = json_tokener_parse(chunk.response);
 	json_object_object_get_ex(parsed_json, "access_token", &json_access_token);
 	const char *access_token = json_object_get_string(json_access_token);
 	store_config(instance, client_id, client_secret, access_token);
@@ -140,5 +141,6 @@ setup()
 	free(code);
 	free(post_url);
 	free(post_token_url);
+	free(chunk.response);
 	return 0;
 }
