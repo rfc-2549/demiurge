@@ -57,7 +57,6 @@ store_config(const struct config *config)
 	fprintf(fp, "client_secret=%s\n", config->client_secret);
 	fprintf(fp, "access_token=%s\n", config->access_token);
 	fclose(fp);
-
 	return 0;
 }
 
@@ -156,14 +155,6 @@ cb(void *data, size_t size, size_t nmemb, void *userp)
 	mem->response[mem->size] = 0;
 
 	return realsize;
-}
-
-size_t
-write_data(void *buffer, size_t size, size_t nmemb, void *userp)
-{
-
-	memcpy(userp, buffer, nmemb * size);
-	return 0;
 }
 
 /* like puts() but writes to stderr */
