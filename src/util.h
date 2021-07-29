@@ -16,24 +16,54 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
+
+struct config
+{
+	char instance[64];
+	char client_id[64];
+	char client_secret[64];
+	char access_token[64];
+};
 
 int
-get_tokens_from_file(char *filename,
-				 char *instance,
-				 char *client_id,
-				 char *client_secret,
-				 char *access_token);
+load_config(struct config *config);
+
+int
+store_config(const struct config *config);
+
+int
+config_exists(void);
+
 size_t
 write_data(void *buffer, size_t size, size_t nmemb, void *userp);
 
 void
 eputs(const char *s);
 
+static inline char *
+dm_strncpy(char *dest, const char *src, size_t size)
+{
+	/* I wish strlcpy was standard C function */
+	char *s = strncpy(dest, src, size);
+	dest[size-1] = 0;
+	return s;
+}
+
 struct memory
 {
 	char *response;
 	size_t size;
 };
+
+static inline void
+free_response(struct memory *memory)
+{
+	if(!memory) return;
+	free(memory->response);
+	memory->response = 0;
+	memory->size = 0;
+}
 
 size_t
 cb(void *data, size_t size, size_t nmemb, void *userp);

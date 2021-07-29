@@ -25,50 +25,25 @@
 #include "asprintf.h"
 #include "util.h"
 
-void
-store_config(const char *instance,
-		   const char *client_id,
-		   const char *client_secret,
-		   const char *access_token)
-{
-	FILE *fp = fopen(".demiurgerc", "w+");
-
-	fprintf(fp, "%s=%s\n", "instance", instance);
-	fprintf(fp, "%s=%s\n", "client_id", client_id);
-	fprintf(fp, "%s=%s\n", "client_secret", client_secret);
-	fprintf(fp, "%s=%s\n", "access_token", access_token);
-	fclose(fp);
-}
-
 /* I am confident to present you, without a doubt, the worst code i've
  * ever written */
 
-int
-setup()
+static int
+get_client_id(struct config *config)
 {
-	char *instance = NULL;
-	instance =
-		readline("Enter your instance (e.g. https://social.fnord.tld) ");
-
 	char *api_url = "/api/v1/apps";
 
 	CURL *curl = curl_easy_init();
-
-	struct json_object *parsed_json;
-	struct json_object *json_client_id;
-	struct json_object *json_client_secret;
-	struct json_object *json_access_token;
 
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating curl (what?)\n");
 		return -1;
 	}
 
-
-	char *post_url = NULL;
 	struct memory chunk = {0};
 	
-	dm_asprintf(&post_url, "%s%s", instance, api_url);
+	char *post_url = NULL;
+	dm_asprintf(&post_url, "%s%s", config->instance, api_url);
 	curl_easy_setopt(curl, CURLOPT_URL, post_url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
@@ -78,53 +53,86 @@ setup()
 	 * to do this */
 
 	curl_easy_setopt(curl,
-				  CURLOPT_POSTFIELDS,
-				  "client_name=demiurge&redirect_uris=urn:ietf:wg:oauth:2."
-				  "0:oob&scope=read+write+follow");
+		CURLOPT_POSTFIELDS,
+		"client_name=demiurge"
+		"&redirect_uris=urn:ietf:wg:oauth:2.0:oob"
+		"&scope=read+write+follow"
+		"&website=https://example.org");
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
+	free(post_url);
+
+	struct json_object *parsed_json;
+	struct json_object *json_client_id;
+	struct json_object *json_client_secret;
 	parsed_json = json_tokener_parse(chunk.response);
 	if(parsed_json == NULL) {
 		fprintf(stderr, "error\n");
+		free_response(&chunk);
 		return -1;
 	}
 
 	json_object_object_get_ex(parsed_json, "client_id", &json_client_id);
-	json_object_object_get_ex(
-		parsed_json, "client_secret", &json_client_secret);
+	json_object_object_get_ex(parsed_json, "client_secret", &json_client_secret);
+
 	const char *client_id = json_object_get_string(json_client_id);
 	const char *client_secret = json_object_get_string(json_client_secret);
+	int ret;
 
-	char *fmt = "%s%sresonse_type=code&client_id=%s&redirect_uri=urn:ietf:wg:"
-			  "oauth:2.0:oob&force_login&scope=read+write+follow";
-	api_url = "/oauth/authorize?";
+	if(!client_id || !client_secret) {
+		eputs("Can't get client_id or client_secret");
+		ret = -1;
+	} else {
+		dm_strncpy(config->client_id, client_id, sizeof(config->client_id));
+		dm_strncpy(config->client_secret, client_secret, sizeof(config->client_secret));
+		ret = 0;
+	}
 
-	free(post_url);
+	free_response(&chunk);
+	return ret;
+}
 
-	post_url = NULL;
+static char *
+ask_for_token(struct config *config)
+{
+	const char *api_url = "/oauth/authorize?";
+	char *fmt = "%s%s"
+		"client_id=%s"
+		"&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
+		"&response_type=code"
+		"&scope=read+write+follow\n";
 
-	dm_asprintf(&post_url, fmt, instance, api_url, client_id);
-	puts(post_url);
+	printf(fmt, config->instance, api_url, config->client_id);
 
-	curl = curl_easy_init();
+	return readline("Please log in in that url and paste the code here: ");
+}
 
-	char *code = NULL;
-	code = readline("Please log in in that url and paste the code here: ");
+static int
+get_token(struct config *config, const char *code)
+{
+	char *fmt =
+		"client_id=%s"
+		"&client_secret=%s"
+		"&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
+		"&code=%s"
+		"&grant_type=authorization_code"
+		"&scope=read+write+follow";
+	const char *api_url = "/oauth/token";
 
-	char *access_token_fmt =
-		"client_id=%s&client_secret=%s&redirect_uri=urn:ietf:wg:oauth:2.0:"
-		"oob&grant_type=authorization_code&code=%s&scope=read+write+follow";
-	api_url = "/oauth/token";
+	CURL *curl = curl_easy_init();
+	if(curl == NULL) {
+		fprintf(stderr, "Error creating curl (what?)\n");
+		return -1;
+	}
 
-	char *post_token_url = NULL;
+	struct memory chunk = {0};
 
-	dm_asprintf(
-		&post_token_url, access_token_fmt, client_id, client_secret, code);
+	char *post_token_url;
+	char *post_url;
 
-	post_url = NULL;
-
-	dm_asprintf(&post_url, "%s%s", instance, api_url);
+	dm_asprintf(&post_token_url, fmt, config->client_id, config->client_secret, code);
+	dm_asprintf(&post_url, "%s%s", config->instance, api_url);
 
 	curl_easy_setopt(curl, CURLOPT_URL, post_url);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_token_url);
@@ -132,15 +140,51 @@ setup()
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
 	curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+	free(post_token_url);
+	free(post_url);
 
+	struct json_object *parsed_json;
+	struct json_object *json_access_token;
+	
 	parsed_json = json_tokener_parse(chunk.response);
 	json_object_object_get_ex(parsed_json, "access_token", &json_access_token);
 	const char *access_token = json_object_get_string(json_access_token);
-	store_config(instance, client_id, client_secret, access_token);
+	int ret;
+	if(!access_token) {
+		eputs("Can't get access_token");
+		ret = -1;
+	} else {
+		dm_strncpy(config->access_token, access_token, sizeof(config->access_token));
+		ret = 0;
+	}
+
+	free_response(&chunk);
+
+	return ret;
+}
+
+int
+setup()
+{
+	struct config config;
+
+	dm_strncpy(config.instance, readline("Enter your instance (e.g. https://social.fnord.tld) "),
+		sizeof(config.instance));
+
+	if(get_client_id(&config) < 0)
+		return -1;
+
+	char *code = ask_for_token(&config);
+
+	if(get_token(&config, code) < 0)
+	{
+		free(code);
+		return -1;
+	}
+
+	store_config(&config);
 
 	free(code);
-	free(post_url);
-	free(post_token_url);
-	free(chunk.response);
 	return 0;
 }
