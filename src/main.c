@@ -17,11 +17,11 @@
 
 #include <stdio.h>
 #include <readline/readline.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include <libgen.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "login.h"
 #include "util.h"
@@ -43,8 +43,9 @@ usage(const char *progname)
 int
 main(int argc, char **argv)
 {
-	if(access(".demiurgerc", F_OK))
-		setup();
+	if(config_exists() != 0 && setup() != 0) {
+		eputs("Login failed");
+	}
 	int c;
 	char *status = NULL;
 	char *visibility = NULL;
@@ -77,13 +78,17 @@ main(int argc, char **argv)
 			break;
 		case 'f':
 			account_id = get_account_id(optarg);
-			follow_account(account_id,'f');
-			free(account_id);
+			if(account_id) {
+				follow_account(account_id,'f');
+				free(account_id);
+			}
 			return 0;
 		case 'u':
 			account_id = get_account_id(optarg);
-			follow_account(account_id,'u');
-			free(account_id);
+			if(account_id) {
+				follow_account(account_id,'u');
+				free(account_id);
+			}
 			return 0;
 		}
 	}

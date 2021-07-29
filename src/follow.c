@@ -25,13 +25,13 @@
 char *
 get_account_id(char *name)
 {
-	char instance[50];
-	char client_id[50];
-	char client_secret[50];
-	char access_token[50];
+	struct config config;
 
-	get_tokens_from_file(
-		".demiurgerc", instance, client_id, client_secret, access_token);
+	if(load_config(&config) < 0) {
+		fprintf(stderr, "Error loading config");
+		return NULL;
+	}
+
 	CURL *curl = curl_easy_init();
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating libcurl thing\n");
@@ -39,7 +39,7 @@ get_account_id(char *name)
 	}
 	char *api_url_fmt = "%s/api/v1/accounts/%s/";
 	char *api_url;
-	dm_asprintf(&api_url, api_url_fmt, instance, name);
+	dm_asprintf(&api_url, api_url_fmt, config.instance, name);
 	struct json_object *parsed_json;
 	struct json_object *account_id;
 
@@ -51,7 +51,7 @@ get_account_id(char *name)
 	char *authorization_header = NULL;
 	struct curl_slist *header_list = NULL;
 
-	dm_asprintf(&authorization_header, header_fmt, access_token);
+	dm_asprintf(&authorization_header, header_fmt, config.access_token);
 	header_list = curl_slist_append(header_list, authorization_header);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
@@ -73,6 +73,7 @@ get_account_id(char *name)
 	free(api_url);
 	free(authorization_header);
 	curl_slist_free_all(header_list);
+
 	/* parse the thing */
 
 	parsed_json = json_tokener_parse(chunk.response);
@@ -83,19 +84,21 @@ get_account_id(char *name)
 	char *return_str = malloc(strlen(str + 1));
 	strcpy(return_str, str); // strdup() segfaults for some reason
 	json_object_put(parsed_json);
-	free(chunk.response);
+
+	free_response(&chunk);
 	return return_str;
 }
 
 int
 follow_account(char *id, char action)
 {
-	char instance[50];
-	char client_id[50];
-	char client_secret[50];
-	char access_token[50];
-	get_tokens_from_file(
-		".demiurgerc", instance, client_id, client_secret, access_token);
+	struct config config;
+
+	if(load_config(&config) < 0) {
+		fprintf(stderr, "Error loading config");
+		return -1;
+	}
+
 	CURL *curl = curl_easy_init();
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating libcurl thing\n");
@@ -108,13 +111,13 @@ follow_account(char *id, char action)
 		api_url_fmt = "%s/api/v1/accounts/%s/unfollow";
 
 	char *api_url;
-	dm_asprintf(&api_url, api_url_fmt, instance, id);
+	dm_asprintf(&api_url, api_url_fmt, config.instance, id);
 
 	char *header_fmt = "Authorization: Bearer %s";
 	char *authorization_header = NULL;
 	struct curl_slist *header_list = NULL;
 
-	dm_asprintf(&authorization_header, header_fmt, access_token);
+	dm_asprintf(&authorization_header, header_fmt, config.access_token);
 	header_list = curl_slist_append(header_list, authorization_header);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
@@ -143,7 +146,7 @@ follow_account(char *id, char action)
 
 	json_object_put(parsed_json);
 	
-	free(chunk.response);
+	free_response(&chunk);
 
 	return 0;
 }

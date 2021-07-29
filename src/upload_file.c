@@ -25,16 +25,16 @@
 int
 upload_file(const char *path, const char *description, char **id_ptr)
 {
-	char instance[50];
-	char client_id[50];
-	char client_secret[50];
-	char access_token[50];
+	struct config config;
+
+	if(load_config(&config) < 0) {
+		fprintf(stderr, "Error loading config");
+		return -1;
+	}
 
 	struct json_object *parsed_json;
 	struct json_object *json_media_id;
 
-	get_tokens_from_file(
-		".demiurgerc", instance, client_id, client_secret, access_token);
 	CURL *curl = curl_easy_init();
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating libcurl thing\n");
@@ -47,7 +47,7 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
 	char *url_to_post = NULL;
-	dm_asprintf(&url_to_post, "%s/api/v1/media", instance);
+	dm_asprintf(&url_to_post, "%s/api/v1/media", config.instance);
 
 	/* Don't repeat yourself, so they say, it's the root of all evil
 	 * today */
@@ -55,7 +55,7 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	char *header_fmt = "Authorization: Bearer %s";
 	struct curl_slist *header_list = NULL;
 	char *authorization_header = NULL;
-	dm_asprintf(&authorization_header, header_fmt, access_token);
+	dm_asprintf(&authorization_header, header_fmt, config.access_token);
 	header_list = curl_slist_append(header_list, authorization_header);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
@@ -93,7 +93,7 @@ upload_file(const char *path, const char *description, char **id_ptr)
 	const char *media_id = json_object_get_string(json_media_id);
 	*id_ptr = (char *)media_id;
 	free(parsed_json);
-	free(chunk.response);
+	free_response(&chunk);
 
 	return 0;
 }

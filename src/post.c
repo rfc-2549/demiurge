@@ -29,13 +29,13 @@
 int
 post_status(const char *status, const char *scope, const char *media_id)
 {
-	char instance[50];
-	char client_id[50];
-	char client_secret[50];
-	char access_token[50];
+	struct config config;
 
-	get_tokens_from_file(
-		".demiurgerc", instance, client_id, client_secret, access_token);
+	if(load_config(&config) < 0) {
+		fprintf(stderr, "Error loading config");
+		return -1;
+	}
+
 	CURL *curl = curl_easy_init();
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating libcurl thing\n");
@@ -45,12 +45,12 @@ post_status(const char *status, const char *scope, const char *media_id)
 	char *api_url = "/api/v1/statuses";
 	char *url = NULL;
 
-	dm_asprintf(&url, "%s%s", instance, api_url);
+	dm_asprintf(&url, "%s%s", config.instance, api_url);
 	char *header_fmt = "Authorization: Bearer %s";
 	char *authorization_header = NULL;
 	struct curl_slist *header_list = NULL;
 
-	dm_asprintf(&authorization_header, header_fmt, access_token);
+	dm_asprintf(&authorization_header, header_fmt, config.access_token);
 	header_list = curl_slist_append(header_list, authorization_header);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
@@ -109,7 +109,7 @@ post_status(const char *status, const char *scope, const char *media_id)
 	parsed_json = json_tokener_parse(chunk.response);
 	json_object_object_get_ex(parsed_json, "url", &json_url);
 	json_object_object_get_ex(parsed_json, "error", &server_response);
-	char *error = (char *)json_object_get_string(server_response);
+	const char *error = json_object_get_string(server_response);
 	if(json_url == NULL) {
 		fprintf(stderr, "Error posting, server said: \"%s\"\n", error);
 		return -1;
@@ -118,7 +118,7 @@ post_status(const char *status, const char *scope, const char *media_id)
 
 	free(url);
 	free(authorization_header);
-	free(chunk.response);
+	free_response(&chunk);
 	json_object_put(parsed_json);
 
 	return 0;

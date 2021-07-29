@@ -3,7 +3,7 @@
 TARGET = demiurge
 OBJS   = login.o util.o post.o main.o upload_file.o asprintf.o follow.o
 CC     = cc
-CFLAGS += -O2 -MD -std=c11 -Wall -Wextra -lcurl -g -lreadline -ljson-c
+CFLAGS += -O2 -MD -std=c11 -Wall -Wextra -Werror -Wpedantic -lcurl -g -lreadline -ljson-c
 
 
 $(TARGET): $(OBJS)
