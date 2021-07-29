@@ -41,8 +41,8 @@ upload_file(const char *path, const char *description, char **id_ptr)
 		return -1;
 	}
 
-	struct memory chunk = {0};
-	
+	struct memory chunk = { 0 };
+
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 

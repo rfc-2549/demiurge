@@ -131,7 +131,7 @@ follow_account(char *id, char action)
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
 	curl_easy_perform(curl);
-	
+
 	curl_easy_cleanup(curl);
 	free(api_url);
 	free(authorization_header);
@@ -145,7 +145,7 @@ follow_account(char *id, char action)
 	printf("Following: %s\n", json_object_get_string(following));
 
 	json_object_put(parsed_json);
-	
+
 	free_response(&chunk);
 
 	return 0;

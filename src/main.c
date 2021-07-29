@@ -67,29 +67,29 @@ main(int argc, char **argv)
 
 	while((c = getopt(argc, argv, "s:v:F:f:u:")) != -1) {
 		switch(c) {
-		case 's':
-			status = optarg;
-			break;
-		case 'v':
-			visibility = optarg;
-			break;
-		case 'F':
-			upload_file(optarg, basename(optarg), &id_ptr);
-			break;
-		case 'f':
-			account_id = get_account_id(optarg);
-			if(account_id) {
-				follow_account(account_id,'f');
-				free(account_id);
-			}
-			return 0;
-		case 'u':
-			account_id = get_account_id(optarg);
-			if(account_id) {
-				follow_account(account_id,'u');
-				free(account_id);
-			}
-			return 0;
+			case 's':
+				status = optarg;
+				break;
+			case 'v':
+				visibility = optarg;
+				break;
+			case 'F':
+				upload_file(optarg, basename(optarg), &id_ptr);
+				break;
+			case 'f':
+				account_id = get_account_id(optarg);
+				if(account_id) {
+					follow_account(account_id, 'f');
+					free(account_id);
+				}
+				return 0;
+			case 'u':
+				account_id = get_account_id(optarg);
+				if(account_id) {
+					follow_account(account_id, 'u');
+					free(account_id);
+				}
+				return 0;
 		}
 	}
 

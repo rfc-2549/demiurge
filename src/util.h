@@ -46,7 +46,7 @@ dm_strncpy(char *dest, const char *src, size_t size)
 {
 	/* I wish strlcpy was standard C function */
 	char *s = strncpy(dest, src, size);
-	dest[size-1] = 0;
+	dest[size - 1] = 0;
 	return s;
 }
 
@@ -59,7 +59,8 @@ struct memory
 static inline void
 free_response(struct memory *memory)
 {
-	if(!memory) return;
+	if(!memory)
+		return;
 	free(memory->response);
 	memory->response = 0;
 	memory->size = 0;

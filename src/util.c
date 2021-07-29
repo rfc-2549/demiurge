@@ -38,7 +38,8 @@ get_config_filename(void)
 	return ret;
 }
 
-int config_exists(void)
+int
+config_exists(void)
 {
 	return access(get_config_filename(), R_OK | W_OK);
 }
@@ -48,7 +49,7 @@ store_config(const struct config *config)
 {
 	FILE *fp = fopen(get_config_filename(), "w+");
 
-	if (!fp)
+	if(!fp)
 		return -1;
 
 	fprintf(fp, "instance=%s\n", config->instance);
@@ -97,8 +98,7 @@ load_config(struct config *config)
 
 	memset(config, 0, sizeof(*config));
 
-	for(i = 1; fgets(line, sizeof(line), fp); i++)
-	{
+	for(i = 1; fgets(line, sizeof(line), fp); i++) {
 		char *key, *value;
 
 		/* TODO: cleanup all whitespaces! */
@@ -123,9 +123,12 @@ load_config(struct config *config)
 		} else if(!strcmp(key, "client_id")) {
 			dm_strncpy(config->client_id, value, sizeof(config->client_id));
 		} else if(!strcmp(key, "client_secret")) {
-			dm_strncpy(config->client_secret, value, sizeof(config->client_secret));
+			dm_strncpy(config->client_secret,
+					 value,
+					 sizeof(config->client_secret));
 		} else if(!strcmp(key, "access_token")) {
-			dm_strncpy(config->access_token, value, sizeof(config->access_token));
+			dm_strncpy(
+				config->access_token, value, sizeof(config->access_token));
 		} else {
 			fprintf(stderr, "Unknown key %s at %i\n", key, i);
 			continue;
