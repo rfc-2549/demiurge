@@ -55,7 +55,8 @@ main(int argc, char **argv)
 
 	if(!isatty(0)) {
 		eputs("Not a terminal, reading from stdin");
-		char *status = readline(""); // TODO: Fix newlines
+		char status[5000]; /* TODO get max from instance */
+		fread(status,5000,1,stdin);
 		post_status(status, NULL, NULL);
 		return 0;
 	}
