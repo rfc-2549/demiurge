@@ -31,7 +31,7 @@ get_account_id(char *name)
 		fprintf(stderr, "Error loading config");
 		return NULL;
 	}
-
+	
 	CURL *curl = curl_easy_init();
 	if(curl == NULL) {
 		fprintf(stderr, "Error creating libcurl thing\n");
@@ -39,6 +39,8 @@ get_account_id(char *name)
 	}
 	char *api_url_fmt = "%s/api/v1/accounts/%s/";
 	char *api_url;
+	if(name[0] == '@')
+		name++;
 	dm_asprintf(&api_url, api_url_fmt, config.instance, name);
 	struct json_object *parsed_json;
 	struct json_object *account_id;
