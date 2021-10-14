@@ -38,6 +38,19 @@ usage(const char *progname)
 	return;
 }
 
+void
+help()
+{
+	puts("-s: status to post");
+	puts("-F: filename to be attatched with the post");
+	puts("-v: The visibility which the post will have, can be: public, "
+		"unlisted, private and direct");
+	puts("-f: Follow an account");
+	puts("-u: Unfollow an account");
+	puts("-U: prints usage message");
+	puts("-h: prints this help message");
+}
+
 /* prints a string to stderr */
 
 int
@@ -56,7 +69,7 @@ main(int argc, char **argv)
 	if(!isatty(0)) {
 		eputs("Not a terminal, reading from stdin");
 		char status[5000]; /* TODO get max from instance */
-		fread(status,5000,1,stdin);
+		fread(status, 5000, 1, stdin);
 		post_status(status, NULL, NULL);
 		return 0;
 	}
@@ -66,7 +79,7 @@ main(int argc, char **argv)
 		return -1;
 	}
 
-	while((c = getopt(argc, argv, "s:v:F:f:u:")) != -1) {
+	while((c = getopt(argc, argv, "s:v:F:f:u:hU")) != -1) {
 		switch(c) {
 			case 's':
 				status = optarg;
@@ -91,6 +104,20 @@ main(int argc, char **argv)
 					free(account_id);
 				}
 				return 0;
+			case 'h':
+				help();
+				return 0;
+				break;
+			case 'U':
+				usage(argv[0]);
+				return 0;
+				break;
+			case '?':
+				break;
+			default:
+				fprintf(stderr, "Unrecognized option: %c\n", c);
+				return 0;
+				break;
 		}
 	}
 

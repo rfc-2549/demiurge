@@ -19,7 +19,15 @@
 	# all jpgs files in different statuses
 	cat /etc/passwd | ./demiurge # Posts the output of /etc/passwd
    #+end_src
-  
+
+   demiurge is a tool to make fedi bots using shell scripts rather
+   than a client you'd use. For example:
+
+   #+begin_src shell
+	export x=$(curl https://some-website.tld)
+	./demiurge -s "current weather: $x"
+   #+end_src
+   
 ** TODO:
    Check timeline and notifications, replies...
 
