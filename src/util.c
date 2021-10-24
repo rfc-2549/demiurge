@@ -162,5 +162,5 @@ cb(void *data, size_t size, size_t nmemb, void *userp)
 void
 eputs(const char *s)
 {
-	fprintf(stderr, "%s\n", s);
+	fputs(s,stderr);
 }
