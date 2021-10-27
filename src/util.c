@@ -136,7 +136,7 @@ load_config(struct config *config)
 
 	fclose(fp);
 
-	return validate_config(config);
+ 	return validate_config(config);
 }
 
 size_t
