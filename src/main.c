@@ -41,14 +41,14 @@ usage(const char *progname)
 void
 help()
 {
-	puts("-s: status to post");
-	puts("-F: filename to be attatched with the post");
-	puts("-v: The visibility which the post will have, can be: public, "
-		"unlisted, private and direct");
-	puts("-f: Follow an account");
-	puts("-u: Unfollow an account");
-	puts("-U: prints usage message");
-	puts("-h: prints this help message");
+	puts("-s, --status: status to post");
+	puts("-F, --filename: filename to be attatched with the post");
+	puts("-v, --visibility: The visibility which the post will have, can"
+	     "be: public unlisted, private and direct");
+	puts("-f, --follow: Follow an account");
+	puts("-u, --unfollow: Unfollow an account");
+	puts("-U, --usage: prints usage message");
+	puts("-h, --help: prints this help message");
 }
 
 /* prints a string to stderr */
@@ -79,9 +79,21 @@ main(int argc, char **argv)
 		return -1;
 	}
 
-	while((c = getopt(argc, argv, "s:v:F:f:u:hU")) != -1) {
+	int option_index = 0;
+	static struct option long_options[] = {
+	  {"status", required_argument, 0, 's'},
+	  {"filename", required_argument, 0, 'F'},
+	  {"visibility", required_argument, 0, 'v'},
+	  {"follow", required_argument, 0, 'f'},
+	  {"unfollow", required_argument, 0, 'u'},
+	  {"usage", no_argument, 0, 'U'},
+	  {"help", no_argument, 0, 'h'},
+	  {0, 0, 0, 0}
+	};
+
+	while((c = getopt_long(argc, argv, "s:v:F:f:u:hU", long_options, &option_index)) != -1) {
 		switch(c) {
-			case 's':
+		        case 's':
 				status = optarg;
 				break;
 			case 'v':
