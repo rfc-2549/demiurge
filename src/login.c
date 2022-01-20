@@ -50,8 +50,9 @@ get_client_id(struct config *config)
 
 	/* TODO: Better way lol */
 	/* If someone wants to do it, use curl_mime thing, I am to lazy
-	 * to do this */
-
+	 * to do this 
+	 */
+	
 	curl_easy_setopt(curl,
 				  CURLOPT_POSTFIELDS,
 				  "client_name=demiurge"

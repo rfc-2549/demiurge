@@ -145,4 +145,6 @@ main(int argc, char **argv)
 	}
 
 	post_status(status, visibility, id_ptr);
+
+	return 0;
 }
