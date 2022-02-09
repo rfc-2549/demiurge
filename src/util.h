@@ -1,3 +1,9 @@
+#ifndef UTIL_H
+#define UTIL_H
+
+
+
+
 /*
   This file is part of demiurge.
 
@@ -68,3 +74,4 @@ free_response(struct memory *memory)
 
 size_t
 cb(void *data, size_t size, size_t nmemb, void *userp);
+#endif /* UTIL_H */

@@ -1,3 +1,5 @@
+#ifndef ASPRINTF_H
+#define ASPRINTF_H
 /*
   This file is part of demiurge.
 
@@ -22,3 +24,4 @@ dm_asprintf(char **restrict strp, const char *restrict fmt, ...);
 
 int
 dm_vasprintf(char **restrict strp, const char *restrict fmt, va_list ap);
+#endif /* ASPRINTF_H */

@@ -1,3 +1,5 @@
+#ifndef POST_H
+#define POST_H
 /*
   This file is part of demiurge.
 
@@ -17,3 +19,4 @@
 
 int
 post_status(const char *status, const char *scope, const char *media_id);
+#endif /* POST_H */

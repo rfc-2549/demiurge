@@ -1,3 +1,5 @@
+#ifndef UPLOAD_FILE_H
+#define UPLOAD_FILE_H
 /*
   This file is part of demiurge.
 
@@ -17,3 +19,4 @@
 
 int
 upload_file(const char *path, const char *description, char **id_ptr);
+#endif /* UPLOAD_FILE_H */

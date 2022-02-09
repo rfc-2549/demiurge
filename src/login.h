@@ -1,3 +1,5 @@
+#ifndef LOGIN_H
+#define LOGIN_H
 /*
   This file is part of demiurge.
 
@@ -17,3 +19,4 @@
 
 int
 setup(); /* Log into the account */
+#endif /* LOGIN_H */
